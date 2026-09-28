@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        :root {
+    --bg: #14110d;
+    --fg: #f4ead9;
+    --muted: #a99983;
+    --card: #211a14;
+    --border: #3b3025;
+    --hover: #2c221a;
+		}
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: var(--bg);
+            color: var(--fg);
+            font: 14px Inter,system-ui,sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #a {
+            width: min(100% - 32px, 440px);
+            transform: translateY(-90px);
+        }
+
+        #p {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        #p img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+
+        #n {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 600;
+        }
+
+        #d {
+            margin: 7px 0 0;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        #l {
+            display: grid;
+            gap: 12px;
+        }
+
+        .l {
+		    position: relative;
+		    height: 64px;
+		    display: flex;
+		    align-items: center;
+		    gap: 16px;
+		    padding: 0 18px;
+		    background: var(--card);
+		    border-radius: 10px;
+		    transition: .15s ease;
+		    -webkit-tap-highlight-color: transparent;
+		    outline: none;
+		}
+
+        .l:hover {
+            background: var(--hover);
+            transform: translateY(-1px);
+        }
+
+        .i {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 30px;
+        }
+
+        .i svg, .i img {
+            width: 30px;
+            height: 30px;
+            filter: brightness(0) invert(1);
+        }
+
+        .t {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 500;
+        }
+        
+        footer {
+		    position: fixed;
+		    bottom: 24px;
+		    left: 0;
+		    width: 100%;
+		    text-align: center;
+		}
+		
+		footer a {
+		    color: var(--muted);
+		    font-size: 13px;
+		}
+		
+		footer a:hover {
+		    color: var(--fg);
+		}
+			
+		/* creates an animation when clicking the link*/
+		#transition {
+		    position: fixed;
+		    z-index: 9999;
+		    width: 40px;
+		    height: 40px;
+		    border-radius: 50%;
+		    background: var(--fg);
+		    pointer-events: none;
+		    transform: translate(-50%, -50%) scale(0);
+		}
+		
+		#transition.go {
+		    animation: expand .7s cubic-bezier(.7,0,.2,1) forwards;
+		}
+		
+		@keyframes expand {
+		    to {
+		        transform: translate(-50%, -50%) scale(100);
+		    }
+		}
+    </style>
+</head>
+
+<body>
+	<div id="transition"></div>
+	
+    <main id="a">
+        <section id="p"></section>
+        <section id="l"></section>
+    </main>
+
+    <footer>
+        <a href="https://github.com/zvqn/LinkTree" target="_blank" rel="noopener noreferrer">
+            Open Source
+        </a>
+    </footer>
+
+    <script type="module">
+        import C from "./config.js";   
+        document.title = C.Profile?.Name ?? "zvqn";
+        const $ = (s,e=document) => e.querySelector(s);
+        const p = $("#p");
+        const l = $("#l");
+
+        const E = (t,c) => {
+            const e = document.createElement(t);
+            if (c) e.className = c;
+            return e;
+        };
+
+        p.innerHTML = `
+            ${C.Profile?.ProfileUrl ? `<img src="${C.Profile.ProfileUrl}" alt="">` : ""}
+            <h1 id="n">${C.Profile?.Name ?? "Unknown"}</h1>
+            <p id="d">${C.Profile?.Description ?? ""}</p>
+        `;
+
+        for (const [k,v] of Object.entries(C)) {
+		    if (k === "Profile" || !v?.DestUrl) continue;
+		
+		    const a = E("a","l");		
+		    a.href = v.DestUrl;
+		    a.target = "_blank";
+		    a.rel = "noopener noreferrer";		
+		    a.innerHTML = `<span class="i"><img src="./brand/${(v.Icon ?? k).toLowerCase()}.svg" alt="${v.Name ?? k} icon" loading="lazy"></span><span class="t">${v.Name ?? k}</span>`;
+		
+		    a.addEventListener("click", e => {
+			    e.preventDefault();			
+				const r = a.getBoundingClientRect();
+			
+			    const t = $("#transition");
+			    t.style.left = `${r.left + r.width / 2}px`;
+			    t.style.top = `${r.top + r.height / 2}px`;
+			    t.classList.add("go");
+			
+			    setTimeout(() => {
+			        window.open(a.href, "_blank");	
+			        t.classList.remove("go");
+			        t.style.left = "";
+			        t.style.top = "";
+			    }, 1000);
+			});
+		    l.append(a);
+		}
+    </script>
+</body>
+</html>
