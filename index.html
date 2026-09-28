@@ -164,10 +164,12 @@
         </a>
     </footer>
 
-    <script type="module">
+	<script type="module">
+		const $ = (s,e=document) => e.querySelector(s);
+		
         import C from "./config.js";   
         document.title = C.Profile?.Name ?? "zvqn";
-        const $ = (s,e=document) => e.querySelector(s);
+       
         const p = $("#p");
         const l = $("#l");
 
@@ -190,7 +192,7 @@
 		    a.href = v.DestUrl;
 		    a.target = "_blank";
 		    a.rel = "noopener noreferrer";		
-		    a.innerHTML = `<span class="i"><img src="./brand/${(v.Icon ?? k).toLowerCase()}.svg" alt="${v.Name ?? k} icon" loading="lazy"></span><span class="t">${v.Name ?? k}</span>`;
+            a.innerHTML = `<span class="i"><img src="${v.Icon ?? `./brand/${k.toLowerCase()}.svg`}" alt="${v.Name ?? k} icon" loading="lazy"></span><span class="t">${v.Name ?? k}</span>`;
 		
 		    a.addEventListener("click", e => {
 			    e.preventDefault();			
